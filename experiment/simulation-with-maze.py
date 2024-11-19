@@ -8,7 +8,6 @@ WIDTH, HEIGHT = 800, 800
 ROWS, COLS = 21, 21
 CELL_SIZE = WIDTH // COLS
 
-# Colors
 WHITE   = (255, 255, 255)
 BLACK   = (0, 0, 0)
 BLUE    = (0, 0, 255)
@@ -82,30 +81,27 @@ def draw_player():
 def handle_player_movement(keys):
     global player_x, player_y, last_move_time
     
-    # Don't process movement if game is finished
     if game_state == FINISHED:
         return
 
-    # Get current time
     current_time = pygame.time.get_ticks()
     
-    # Check if enough time has passed since last movement
     if current_time - last_move_time < MOVEMENT_COOLDOWN:
         return
 
     new_x, new_y = player_x, player_y
     moved = False
 
-    if keys[pygame.K_UP]:      # Move up
+    if keys[pygame.K_UP]:
         new_y -= 1
         moved = True
-    elif keys[pygame.K_DOWN]:    # Move down
+    elif keys[pygame.K_DOWN]:
         new_y += 1
         moved = True
-    elif keys[pygame.K_LEFT]:    # Move left
+    elif keys[pygame.K_LEFT]:
         new_x -= 1
         moved = True
-    elif keys[pygame.K_RIGHT]:   # Move right
+    elif keys[pygame.K_RIGHT]:
         new_x += 1
         moved = True
 
@@ -117,7 +113,7 @@ def handle_player_movement(keys):
 
 def draw_game_over_message():
     font = pygame.font.Font(None, 74)
-    text = font.render('Finnish, You Can Close the App', True, GREEN)
+    text = font.render('Finish, You Can Close the App', True, GREEN)
     text_rect = text.get_rect(center=(WIDTH/2, HEIGHT/2))
     screen.blit(text, text_rect)
 
