@@ -18,7 +18,7 @@ PURPLE  = (128, 0, 128)
 PLAYING = "playing"
 FINISHED = "finished"
 
-DIRECTIONS = [(0, -1), (1, 0), (0, 1), (-1, 0)]
+DIRECTIONS = [(0, -1), (1, 0), (0, 1), (-1, 0)] # down, right, up, left
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
