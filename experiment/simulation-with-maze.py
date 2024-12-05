@@ -2,7 +2,6 @@
 import pygame
 import random
 import heapq
-import time
 
 WIDTH, HEIGHT = 800, 800
 ROWS, COLS = 21, 21

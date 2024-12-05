@@ -34,10 +34,11 @@ clock = pygame.time.Clock()
 
 maze = new_img.astype(int)
 player_x, player_y = 210, 250
+# player_x, player_y = 100, 100
 player_path = []
 shortest_path = []
 
-MOVEMENT_COOLDOWN = 150
+MOVEMENT_COOLDOWN = 0
 last_move_time = 0
 game_state = PLAYING
 
@@ -52,6 +53,8 @@ def draw_maze():
 def draw_player():
     pygame.draw.rect(screen, GREEN, pygame.Rect(player_x * (CELL_SIZE), player_y * (CELL_SIZE), CELL_SIZE + 5, CELL_SIZE + 5))
 
+
+STEPS = 1
 def handle_player_movement(keys):
     global player_x, player_y, last_move_time
     
@@ -67,16 +70,16 @@ def handle_player_movement(keys):
     moved = False
 
     if keys[pygame.K_UP]:
-        new_y -= 1
+        new_y -= STEPS
         moved = True
     elif keys[pygame.K_DOWN]:
-        new_y += 1
+        new_y += STEPS
         moved = True
     elif keys[pygame.K_LEFT]:
-        new_x -= 1
+        new_x -= STEPS
         moved = True
     elif keys[pygame.K_RIGHT]:
-        new_x += 1
+        new_x += STEPS
         moved = True
 
     if moved and 0 <= new_x < COLS and 0 <= new_y < ROWS and maze[new_y][new_x] == 0:
@@ -146,6 +149,8 @@ def main():
 
         keys = pygame.key.get_pressed()
         handle_player_movement(keys)
+        handle_player_movement(keys)
+        handle_player_movement(keys)
 
         screen.fill(BLACK)
         draw_maze()
@@ -159,7 +164,7 @@ def main():
             draw_game_over_message()
             
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(165)
 
     pygame.quit()
 
