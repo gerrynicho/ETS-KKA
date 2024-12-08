@@ -24,6 +24,7 @@ GREEN   = (0, 255, 0)
 RED     = (255, 0, 0)
 PURPLE  = (128, 0, 128)
 
+PRESTART = "waiting"
 PLAYING = "playing"
 FINISHED = "finished"
 
@@ -40,22 +41,13 @@ shortest_path = []
 
 MOVEMENT_COOLDOWN = 50
 last_move_time = 0
-game_state = PLAYING
+game_state = PRESTART
 
 ZOOM_FACTOR = 2
 zoom_width = ORIGINAL_WIDTH // ZOOM_FACTOR
 zoom_height = ORIGINAL_HEIGHT // ZOOM_FACTOR
 
-def start_player(map, player_size, rows, cols):
-    while True:
-        temp_x = np.random.randint(player_size, rows - player_size)
-        temp_y = np.random.randint(player_size, cols - player_size)
-
-        surrounding = map[temp_x - 1:temp_x + 2, temp_y - 1:temp_y + 2]
-        if np.all(surrounding == 1):
-            return temp_x, temp_y
-
-player_x, player_y = start_player(map, PLAYER_SIZE, ROWS, COLS)
+player_x, player_y = None, None
 
 def draw_map(surface, offset_x, offset_y, zoom=False):
     zoom_cell_size = CELL_SIZE * ZOOM_FACTOR if zoom else CELL_SIZE
@@ -91,6 +83,10 @@ def draw_map(surface, offset_x, offset_y, zoom=False):
                  zoom_cell_size + 2, zoom_cell_size + 2))
 
 def draw_player(surface, offset_x, offset_y, zoom=False):
+    global player_x, player_y
+    if player_x is None or player_y is None:
+        return
+
     zoom_cell_size = CELL_SIZE * ZOOM_FACTOR if zoom else CELL_SIZE
 
     if zoom:
@@ -131,7 +127,7 @@ def calculate_zoom_offset():
     return int(zoom_x), int(zoom_y)
 
 def handle_player_movement(keys):
-    global player_x, player_y, last_move_time
+    global player_x, player_y, last_move_time, game_state
     
     if game_state == FINISHED:
         return
@@ -198,7 +194,7 @@ def find_shortest_path():
     shortest_path.reverse()
 
 def main():
-    global game_state, screen, ZOOM_FACTOR
+    global game_state, screen, ZOOM_FACTOR, player_x, player_y
     running = True
     show_shortest_path = False
     zoomed = False
@@ -207,6 +203,17 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            
+            if game_state == PRESTART and event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                map_x = mouse_x // CELL_SIZE
+                map_y = mouse_y // CELL_SIZE
+                
+                if 0 <= map_x < COLS and 0 <= map_y < ROWS and map[map_y][map_x] == 0:
+                    player_x, player_y = map_x, map_y
+                    player_path.append((player_x, player_y))
+                    game_state = PLAYING
+
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN and game_state == PLAYING:
                     find_shortest_path()
@@ -216,11 +223,15 @@ def main():
                     zoomed = not zoomed
 
         keys = pygame.key.get_pressed()
-        handle_player_movement(keys)
+        
+        if game_state == PLAYING:
+            handle_player_movement(keys)
 
         screen.fill(BLACK)
 
-        if game_state == PLAYING:
+        if game_state == PRESTART:
+            draw_map(screen, 0, 0)
+        elif game_state == PLAYING:
             zoom_x, zoom_y = calculate_zoom_offset() if zoomed else (0, 0)
             draw_map(screen, zoom_x, zoom_y, zoom=zoomed)
             draw_player(screen, zoom_x, zoom_y, zoom=zoomed)
