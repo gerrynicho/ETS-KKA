@@ -26,7 +26,7 @@ if want_filter == 'y':
     equalized = cv2.equalizeHist(img)
     _, binary = cv2.threshold(equalized, 200, 255, cv2.THRESH_BINARY)
     cv2.imwrite(f'maps/{file_name}_filtered.png', binary)
-    print(f"Filtered map saved in /maps/{file_name}_filtered.png")
+    print(f"Filtered map saved in /maps/{file_name}-filtered.png")
 else:
     image.save(f'maps/{file_name}.png')
     print(f"Map saved in /maps/{file_name}.png")
